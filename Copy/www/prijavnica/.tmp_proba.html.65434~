@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+		<script type="text/javascript" src="javascript/scripts.js"></script>
+		</script>
+		<script type="text/javascript" src="javascript/popup.js"></script>
+		</script>
+		<script type="text/javascript" src="javascript/jquery.js">
+			//$(document).ready(function(){$.post("test.php",{ime:"Zeljko",prezime:"Vrabec"}, function(data){$("#response").html(data);});});
+		</script>
+		<script type="text/javascript">
+			//$(document).ready(function(){applyinitialcss(); $.post("test.php",{ime:"Željko",prezime:"Vrabec"}, function(data){showMe(); $("#response").html(data);});});
+			$(document).
+		</script>
+</head>
+<body>
+	
+<div id="theLayer" style="position:absolute;width:250px;left:100;top:100;visibility:hidden;">
+<table border="0" width="250" bgcolor="#CCCCCC" cellspacing="0" cellpadding="5">
+<tr>
+<td width="100%">
+  <table border="0" width="100%" cellspacing="0" cellpadding="0" height="36">
+  <tr>
+  <td id="titleBar" style="cursor:move" width="100%"  background="gif/title.png">
+  <ilayer width="100%" onSelectStart="return false">
+  <layer width="100%" onMouseover="isHot=true; if (isN4) ddN4(theLayer);" onMouseout="isHot=false">
+  <font face="Arial" color="#FFFFFF">Layer Title</font>
+  </layer>
+  </ilayer>
+  </td>
+  <td style="cursor:hand" valign="top">
+  <a href="#" onClick="hideMe();return false"><font color=#ffffff size=2 face=arial  style="text-decoration:none">X</font></a>
+  </td>
+  </tr>
+  <tr>
+  <td width="100%" bgcolor="#FFFFFF" style="padding:4px" colspan="2">
+<div id="response"></div>
+<div align="center"><input type="button" value="OK" onClick="hideMe();return false" /></div>
+  </td>
+  </tr>
+  </table> 
+</td>
+</tr>
+</table>
+</div>
+
+</body>
+</html>

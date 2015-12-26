@@ -1,0 +1,197 @@
+<?php
+require_once 'sudionik.php';
+require_once 'mysqlConnection.php';
+include 'dbsettings.php';
+
+$tip = $_REQUEST["tip"];	
+
+switch ($tip){
+			
+		case "unos":
+			
+		$ime = $_REQUEST["txtIme"];
+		$prezime = $_REQUEST["txtPrezime"];
+		$adresa = $_REQUEST["txtAdresa"];
+		$broj_poste = $_REQUEST["txtPostNumber"];
+		$mjesto = $_REQUEST["txtMjesto"];
+		$telefon = $_REQUEST["txtPhone"];
+		$user = $_REQUEST["txtUser"];
+		$domain = $_REQUEST["txtDomain"];
+		$skola = $_REQUEST["txtSkola"];
+		if(isset($_POST['chkClan'])){
+			$clan=1;
+		}
+		else{
+			$clan=0;
+		}		
+		
+		if(isset($_POST['chkAuto'])){
+			$auto=1;
+		}
+		else{
+			$auto=0;
+		}		
+		
+		if(isset($_POST['chkIzlet'])){
+			$izlet=1;
+		}
+		else{
+			$izlet=0;
+		}		
+		if(isset($_POST['chkMajica'])){
+			$majica=1;
+			$boja = $_REQUEST["selectColor"];
+			$velicina = $_REQUEST["selectSize"];
+		}
+		else{
+			$majica=0;
+			$boja = NULL;
+			$velicina = NULL;
+		}		
+		
+		$sudionik = new sudionik($ime, $prezime, $adresa, $broj_poste, $mjesto, $telefon, $user, $domain, $skola, $clan, $auto, $izlet, $majica, $boja, $velicina);
+		if($sudionik->insertMember($dbhostname, $dbusername, $dbpassword, $dbname, $dbtbl) && $sudionik->sendMailToMember() && $sudionik->sendNotification()){
+			unset($sudionik);
+			echo "<SCRIPT LANGUAGE='javascript'>window.alert ('Prijava uspješno izvršena!'); window.open('index.php','_self');</SCRIPT>";
+		}
+		else{
+			unset($sudionik);
+			echo "<SCRIPT LANGUAGE='javascript'>window.alert ('Greška prilikom prijave!'); window.open('index.php','_self');</SCRIPT>";
+		}
+		$tip=NULL;
+		break;
+		case "login":
+			$username = $_REQUEST["txtUserName"];
+			$password = $_REQUEST["txtPassword"];
+			$conn = new mysqlConnection($dbhostname, $dbusername, $dbpassword, $dbname);
+			$conn->open();
+				echo validateLoginData($username, $password, $conn->dbconnection)." tu sam!";
+				/*if (!validateLoginData($username, $password)){
+				echo "<SCRIPT LANGUAGE='javascript'>window.alert ('Pogrešno upisani podaci ili niste prijavljeni na skup!'); window.open('index.php','_self');</SCRIPT>";
+				$conn->close();
+				unset($conn);
+			}
+			else{
+				if(isAdmin($username)){
+					$query="SELECT ime, prezime, adresa, postnum, mjesto, telefon, email, skola, clan, auto, izlet, majica, boja, velicina, user FROM ".$dbtbl;
+					$result = mysql_query($query);
+					if(mysql_num_rows($result)<=0){
+						$conn->close();
+						unset($conn);
+         				echo "<SCRIPT LANGUAGE='javascript'>window.alert ('Nema zapisa!');window.open('index.php','_self');</SCRIPT>";
+					}
+         		else{
+         			echo '<SCRIPT LANGUAGE="javascript"> var win=window.open("","Lista prijavljenih","width=800,height=600 status=1");
+					win.document.write("
+					<html>
+					<head>
+					<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+					<link rel="stylesheet" type="text/css" href="css/style.css" />
+					<script type="text/javascript" src="javascript/scripts.js"></script>
+					</head>
+					<body onload=\'decorateGrid("gridTable")\'>
+							<table width="800" id="gridTable" border="0">
+								<thead>
+									<tr><th>Ime</th><th>Prezime</th><th>Adresa</th><th>Pošt. broj</th><th>Mjesto</th><th>Telefon</th><th>e-mail</th><th>Škola</th><th>Član Normale</th><th>Auto</th><th>Izlet</th><th>Majica</th><th>Boja</th><th>Veličina</th><th>Korisničko ime</th></tr>
+								</thead>
+								<tbody>';
+						while ($all = mysql_fetch_assoc($result)){
+							
+								echo '<tr><td>'.$all["ime"].'</td><td>'.$all["prezime"].'</td><td>'.$all["adresa"].'</td><td>'.$all["postnum"].'</td><td>'.$all["mjesto"].'</td><td>'.$all["telefon"].'</td><td>'.$all["email"].'</td><td>'.$all["skola"].'</td><td>'.$all["clan"].'</td><td>'.$all["auto"].'</td><td>'.$all["izlet"].'</td><td>'.$all["majica"].'</td><td>'.$all["boja"].'</td><td>'.$all["velicina"].'</td><td>'.$all["user"].'</td></tr>';
+						}
+						$conn->close();
+						unset($conn);
+		 			echo '</tbody>
+					</table>
+					</body>
+					</html>");
+					</SCRIPT>
+					';
+         		
+         		}
+				
+				}
+				else{
+					$query="SELECT ime,prezime,adresa,postnum,mjesto,telefon,email,skola,clan,auto,izlet,majica,boja,velicina,user FROM ".$dbtbl;
+					$result = mysql_query($query);
+					if(mysql_affected_rows()==0){
+         				echo "<SCRIPT LANGUAGE='javascript'>window.alert ('Nema zapisa!');window.open('index.php','_self');</SCRIPT>";
+					}
+         		else{
+         			echo '<SCRIPT LANGUAGE="javascript"> var win=window.open("","Lista prijavljenih","width=800,height=600, status=1");
+					win.document.write("
+					<html>
+					<head>
+					<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+					<link rel="stylesheet" type="text/css" href="css/style.css" />
+					<script type="text/javascript" src="javascript/scripts.js"></script>
+					</head>
+					<body onload=\'decorateGrid("gridTable")\'>
+							<table width="800" id="gridTable" border="0">
+								<thead>
+									<tr><th>Ime</th><th>Prezime</th><th>Adresa</th><th>Pošt. broj</th><th>Mjesto</th><th>Telefon</th><th>e-mail</th><th>Škola</th><th>Član Normale</th><th>Auto</th><th>Izlet</th><th>Majica</th><th>Boja</th><th>Veličina</th><th>Korisničko ime</th></tr>
+								</thead>
+								<tbody>';
+						while ($all = mysql_fetch_assoc($result)){
+							
+								echo '<tr><td>'.$all["ime"].'</td><td>'.$all["prezime"].'</td><td>'.$all["adresa"].'</td><td>'.$all["postnum"].'</td><td>'.$all["mjesto"].'</td><td>'.$all["telefon"].'</td><td>'.$all["email"].'</td><td>'.$all["skola"].'</td><td>'.$all["clan"].'</td><td>'.$all["auto"].'</td><td>'.$all["izlet"].'</td><td>'.$all["majica"].'</td><td>'.$all["boja"].'</td><td>'.$all["velicina"].'</td><td>'.$all["user"].'</td></tr>';
+						}
+						$conn->close();
+						unset($conn);
+		 			echo '</tbody>
+					</table>
+					</body>
+					</html>");
+					</SCRIPT>
+					';
+         		}
+				}
+			}
+			$username = NULL;
+			$password = NULL;
+			$tip=NULL;*/
+			$conn->close();
+			unset($conn);
+			break;
+
+}
+
+function validateLoginData($uname, $pass, $dbconn){
+		$query="SELECT * FROM ".$dbtbl." WHERE user='".$uname."'"; // AND password='".md5($pass)."'";
+		$result=mysql_query($query, $dbconn);
+        if(mysql_num_rows($result)==0){
+         	$resp=false;
+         }
+         else{
+         	$resp=true;
+         }
+         return mysql_num_rows($result);
+}
+
+	function loadXML($xmlFileName){
+	$result=array();
+	$xml = simplexml_load_file($xmlFileName);
+		foreach($xml->children() as $child)
+  		{
+  			array_push($result,$child);
+  		}
+  		return $result;
+	}
+	
+	function fillSelectBox($xmlFileName){
+	foreach (loadXML($xmlFileName) as $i => $value){
+		echo "<option value=".$value.">".$value."</option>";
+	}
+}
+	
+	function isAdmin($username){
+		if(in_array($username, loadXML("xml/admins.xml"))){
+			return true;
+		}
+		else{
+			return false;
+		}
+	
+}
+	
+?>
